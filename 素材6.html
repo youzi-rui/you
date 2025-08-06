@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沙尘暴防御战 - 地球绿色卫士</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            background-image: url('素材图片2.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            min-height: 100vh;
+        }
+        
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            backdrop-filter: blur(2px);
+        }
+        
+        .game-header {
+            background-color: #4CAF50;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .game-title {
+            margin: 0;
+            font-size: 28px;
+        }
+        
+        .game-subtitle {
+            margin: 10px 0 0;
+            font-size: 16px;
+            font-weight: normal;
+        }
+        
+        .game-content {
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background-color: rgba(249, 249, 249, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+        }
+        
+        .stats {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background-color: rgba(240, 230, 204, 0.8);
+            border: 2px solid #d4b872;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+        
+        .village {
+            position: absolute;
+            width: 100px;
+            height: 80px;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #8B4513;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-weight: bold;
+            z-index: 10;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        .tree {
+            position: absolute;
+            width: 30px;
+            height: 50px;
+            bottom: 0;
+            cursor: pointer;
+            z-index: 5;
+            transition: transform 0.2s;
+        }
+        
+        .tree:hover {
+            transform: scale(1.1);
+        }
+        
+        .tree-trunk {
+            position: absolute;
+            width: 8px;
+            height: 20px;
+            bottom: 0;
+            left: 11px;
+            background-color: #8B4513;
+        }
+        
+        .tree-crown {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            bottom: 20px;
+            border-radius: 50%;
+            background-color: #4CAF50;
+        }
+        
+        .sandstorm {
+            position: absolute;
+            width: 100px;
+            height: 200px;
+            right: -100px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: linear-gradient(90deg, rgba(210,180,140,0.1), rgba(210,180,140,0.8));
+            border-radius: 50%;
+            filter: blur(5px);
+            z-index: 8;
+        }
+        
+        .sand-particle {
+            position: absolute;
+            background-color: #f4a460;
+            border-radius: 50%;
+            opacity: 0.7;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        button {
+            padding: 8px 15px;
+            background-color: #2196F3;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #0b7dda;
+        }
+        
+        .game-message {
+            text-align: center;
+            padding: 10px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+        }
+        
+        .warning {
+            background-color: #fcf8e3;
+            color: #8a6d3b;
+        }
+        
+        .danger {
+            background-color: #f2dede;
+            color: #a94442;
+        }
+        
+        .knowledge-panel {
+            background-color: rgba(249, 249, 249, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .knowledge-title {
+            color: #4CAF50;
+            margin-top: 0;
+        }
+        
+        .cooldown-bar {
+            width: 100%;
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+        
+        .cooldown-progress {
+            height: 100%;
+            background-color: #4CAF50;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+        
+        .rules-panel {
+            background-color: rgba(240, 248, 255, 0.8);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 5px solid #2196F3;
+        }
+        
+        .rules-title {
+            color: #2196F3;
+            margin-top: 0;
+        }
+        
+        .rules-list {
+            padding-left: 20px;
+        }
+        
+        .rules-list li {
+            margin-bottom: 8px;
+        }
+        
+        .defense-effect {
+            position: absolute;
+            color: green;
+            font-weight: bold;
+            animation: float-up 1s forwards;
+            z-index: 20;
+        }
+        
+        .score-effect {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            animation: score-pop 0.5s;
+            z-index: 100;
+            display: none;
+        }
+        
+        @keyframes float-up {
+            0% { transform: translateY(0); opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+        
+        @keyframes score-pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+            20%, 40%, 60%, 80% { transform: translateX(5px); }
+        }
+        
+        .shake {
+            animation: shake 0.5s;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1 class="game-title">沙尘暴防御战（互动小游戏）</h1>
+            <p class="game-subtitle">种植梭梭树，保护村庄免受沙尘暴侵袭</p>
+        </div>
+        
+        <div class="game-content">
+            <div class="rules-panel">
+                <h3 class="rules-title">游戏规则</h3>
+                <ul class="rules-list">
+                    <li>点击游戏区域种植梭梭树，阻挡来袭的沙尘暴</li>
+                    <li>每棵梭梭树可以提供<strong>30点防御力</strong>，能有效减弱沙尘暴</li>
+                    <li>沙尘暴会定期来袭，每次造成<strong>5-15点伤害</strong>（随关卡提升）</li>
+                    <li>村庄有<strong>150点生命值</strong>，归零则游戏结束</li>
+                    <li><strong>完全阻挡</strong>沙尘暴可获得<strong>10分</strong></li>
+                    <li><strong>部分阻挡</strong>可获得<strong>1-5分</strong></li>
+                    <li>每60秒提升一个关卡，沙尘暴会变得更猛烈</li>
+                    <li>种植冷却时间为<strong>0.1秒</strong>，可以快速连续种植</li>
+                </ul>
+            </div>
+            <div class="game-info">
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value" id="health">150</div>
+                        <div class="stat-label">村庄健康度</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="trees">0</div>
+                        <div class="stat-label">树木数量</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="level">1</div>
+                        <div class="stat-label">关卡</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="score">0</div>
+                        <div class="stat-label">得分</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-message" id="message">点击"开始游戏"按钮开始防御沙尘暴！</div>
+            
+            <div class="controls">
+                <div class="action-buttons">
+                    <button id="start-btn">开始游戏</button>
+                    <button id="restart-btn">重新开始</button>
+                </div>
+            </div>
+            
+            <div class="cooldown-bar">
+                <div class="cooldown-progress" id="cooldown"></div>
+            </div>
+            
+            <div class="game-area" id="game-area">
+                <div class="village">村庄</div>
+                <!-- 树木和沙尘暴将通过JavaScript动态添加 -->
+            </div>
+            
+            <div class="knowledge-panel">
+                <h3 class="knowledge-title">生态知识 - 梭梭树</h3>
+                <p id="knowledge-text">梭梭树是荒漠地区的先锋树种，耐旱耐盐碱，能够有效固定沙土，减少沙尘暴的发生。一棵成年梭梭树可以固定10平方米的沙地，其发达的根系能深入地下吸收水分，在极端干旱条件下也能生存。</p>
+            </div>
+        </div>
+        <div class="back-button-container" style="text-align: center; margin-top: 20px;">
+    <button onclick="window.location.href=''" 
+            style="padding: 10px 20px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        向下滑
+    </button>
+</div>
+    </div>
+
+    <script>
+        // 游戏状态
+        const gameState = {
+            health: 150,
+            trees: 0,
+            level: 1,
+            score: 0,
+            gameActive: false,
+            cooldown: false,
+            sandstormInterval: null,
+            treePositions: [],
+            sandstormActive: false,
+            lastDefenseTime: 0
+        };
+
+        // 梭梭树配置
+        const treeConfig = {
+            name: '梭梭树',
+            defense: 30,
+            color: '#4CAF50',
+            cooldown: 0.1,
+            description: '梭梭树是荒漠地区的先锋树种，耐旱耐盐碱，能够有效固定沙土，减少沙尘暴的发生。一棵成年梭梭树可以固定10平方米的沙地，其发达的根系能深入地下吸收水分，在极端干旱条件下也能生存。'
+        };
+
+        // DOM元素
+        const elements = {
+            health: document.getElementById('health'),
+            trees: document.getElementById('trees'),
+            level: document.getElementById('level'),
+            score: document.getElementById('score'),
+            message: document.getElementById('message'),
+            gameArea: document.getElementById('game-area'),
+            cooldown: document.getElementById('cooldown'),
+            knowledgeText: document.getElementById('knowledge-text'),
+            startBtn: document.getElementById('start-btn'),
+            restartBtn: document.getElementById('restart-btn')
+        };
+
+        // 初始化游戏
+        function initGame() {
+            // 重置游戏状态
+            gameState.health = 150;
+            gameState.trees = 0;
+            gameState.level = 1;
+            gameState.score = 0;
+            gameState.gameActive = false;
+            gameState.treePositions = [];
+            gameState.lastDefenseTime = 0;
+            
+            // 清除所有树木和沙尘暴
+            elements.gameArea.querySelectorAll('.tree, .sandstorm, .sand-particle').forEach(el => el.remove());
+            
+            // 更新UI
+            updateUI();
+            showMessage('点击"开始游戏"开始防御沙尘暴！', 'warning');
+            
+            // 设置按钮事件
+            elements.startBtn.onclick = startGame;
+            elements.restartBtn.onclick = initGame;
+            
+            // 设置游戏区域点击事件
+            elements.gameArea.onclick = placeTree;
+            
+            // 初始知识文本
+            updateKnowledgeText();
+        }
+
+        // 开始游戏
+        function startGame() {
+            if (gameState.gameActive) return;
+            
+            gameState.gameActive = true;
+            showMessage('沙尘暴即将来临！赶快种植梭梭树保护村庄！', 'warning');
+            
+            // 启动沙尘暴
+            startSandstorm();
+            
+            // 每60秒提升关卡
+            setInterval(() => {
+                if (gameState.gameActive) {
+                    gameState.level++;
+                    updateUI();
+                    showMessage(`关卡 ${gameState.level}！沙尘暴变得更猛烈了！`, 'warning');
+                }
+            }, 60000);
+        }
+
+        // 放置树木
+        function placeTree(e) {
+            if (!gameState.gameActive || gameState.cooldown) return;
+            
+            // 创建树木元素
+            const tree = document.createElement('div');
+            tree.className = 'tree';
+            tree.style.left = `${e.clientX - elements.gameArea.getBoundingClientRect().left - 15}px`;
+            
+            // 树木外观
+            const treeTrunk = document.createElement('div');
+            treeTrunk.className = 'tree-trunk';
+            
+            const treeCrown = document.createElement('div');
+            treeCrown.className = 'tree-crown';
+            treeCrown.style.backgroundColor = treeConfig.color;
+            
+            tree.appendChild(treeTrunk);
+            tree.appendChild(treeCrown);
+            elements.gameArea.appendChild(tree);
+            
+            // 记录树木位置
+            const treeX = parseInt(tree.style.left);
+            gameState.treePositions.push({ x: treeX, defense: treeConfig.defense });
+            gameState.trees++;
+            updateUI();
+            
+            // 冷却时间
+            startCooldown(treeConfig.cooldown);
+            
+            // 显示消息
+            showMessage(`成功种植梭梭树！防御力+${treeConfig.defense}`, 'success');
+        }
+
+        // 开始冷却
+        function startCooldown(duration) {
+            gameState.cooldown = true;
+            let progress = 0;
+            const interval = 10; // 毫秒
+            
+            const cooldownInterval = setInterval(() => {
+                progress += interval / (duration * 1000);
+                elements.cooldown.style.width = `${Math.min(progress * 100, 100)}%`;
+                
+                if (progress >= 1) {
+                    clearInterval(cooldownInterval);
+                    gameState.cooldown = false;
+                    elements.cooldown.style.width = '0%';
+                }
+            }, interval);
+        }
+
+        // 启动沙尘暴
+        function startSandstorm() {
+            // 清除已有定时器
+            if (gameState.sandstormInterval) {
+                clearInterval(gameState.sandstormInterval);
+            }
+            
+            gameState.sandstormInterval = setInterval(() => {
+                if (!gameState.gameActive || gameState.sandstormActive) return;
+                
+                // 根据树木数量调整沙尘暴生成频率
+                const treeCount = gameState.treePositions.length;
+                const baseInterval = 3000 + Math.random() * 5000;
+                const adjustedInterval = Math.max(1000, baseInterval - Math.min(treeCount * 100, 2000));
+                
+                setTimeout(() => {
+                    if (!gameState.gameActive) return;
+                    
+                    gameState.sandstormActive = true;
+                    const sandstorm = createSandstorm();
+                    
+                    let position = -100;
+                    const moveInterval = setInterval(() => {
+                        position += 2 + gameState.level * 0.3;
+                        sandstorm.style.right = `${position}px`;
+                        
+                        if (position >= elements.gameArea.offsetWidth - 100) {
+                            clearInterval(moveInterval);
+                            attackVillage(sandstorm);
+                        } else {
+                            checkTreeCollisions(sandstorm, position);
+                        }
+                    }, 20);
+                }, adjustedInterval);
+            }, 1000);
+        }
+
+        // 创建沙尘暴
+        function createSandstorm() {
+            const sandstorm = document.createElement('div');
+            sandstorm.className = 'sandstorm';
+            elements.gameArea.appendChild(sandstorm);
+            
+            // 创建沙粒效果
+            for (let i = 0; i < 20; i++) {
+                setTimeout(() => {
+                    const particle = document.createElement('div');
+                    particle.className = 'sand-particle';
+                    particle.style.width = `${Math.random() * 10 + 5}px`;
+                    particle.style.height = particle.style.width;
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.top = `${Math.random() * 100}%`;
+                    sandstorm.appendChild(particle);
+                    
+                    // 沙粒动画
+                    animateParticle(particle);
+                }, i * 100);
+            }
+            
+            return sandstorm;
+        }
+
+        // 沙粒动画
+        function animateParticle(particle) {
+            let x = 0;
+            let y = Math.random() * 100;
+            const speedX = Math.random() * 2 + 1;
+            const speedY = (Math.random() - 0.5) * 2;
+            
+            const moveInterval = setInterval(() => {
+                x += speedX;
+                y += speedY;
+                
+                particle.style.left = `${x}%`;
+                particle.style.top = `${y}%`;
+                
+                if (x > 100) {
+                    clearInterval(moveInterval);
+                    particle.remove();
+                }
+            }, 20);
+        }
+
+        // 检查树木碰撞
+        function checkTreeCollisions(sandstorm, position) {
+            const sandstormLeft = elements.gameArea.offsetWidth - position - 100;
+            const sandstormRight = sandstormLeft + 100;
+            let totalDefenseUsed = 0;
+            
+            gameState.treePositions = gameState.treePositions.filter(tree => {
+                const treeLeft = tree.x;
+                const treeRight = tree.x + 30;
+                
+                if (treeRight > sandstormLeft && treeLeft < sandstormRight) {
+                    const damage = Math.min(15 + gameState.level, tree.defense);
+                    totalDefenseUsed += damage;
+                    
+                    // 显示每棵树的防御效果
+                    const treeElement = Array.from(document.querySelectorAll('.tree')).find(el => 
+                        parseInt(el.style.left) === tree.x
+                    );
+                    
+                    if (treeElement) {
+                        const defenseText = document.createElement('div');
+                        defenseText.className = 'defense-effect';
+                        defenseText.textContent = `-${damage}`;
+                        defenseText.style.left = `${tree.x + 15}px`;
+                        defenseText.style.top = '100px';
+                        defenseText.style.color = damage >= tree.defense ? 'red' : 'orange';
+                        elements.gameArea.appendChild(defenseText);
+                        
+                        setTimeout(() => {
+                            defenseText.remove();
+                        }, 1000);
+                        
+                        treeElement.classList.add('shake');
+                        setTimeout(() => {
+                            treeElement.classList.remove('shake');
+                        }, 500);
+                        
+                        if (damage >= tree.defense) {
+                            treeElement.remove();
+                            return false;
+                        }
+                    }
+                    
+                    tree.defense -= damage;
+                    return tree.defense > 0;
+                }
+                return true;
+            });
+            
+            return totalDefenseUsed;
+        }
+
+        // 攻击村庄
+        function attackVillage(sandstorm) {
+            // 计算剩余树木的总防御力
+            const totalDefense = gameState.treePositions.reduce((sum, tree) => sum + tree.defense, 0);
+            
+            // 计算伤害 (基础伤害 + 关卡加成 - 防御力)
+            const baseDamage = 5 + gameState.level;
+            let damage = Math.max(0, baseDamage - totalDefense / 10);
+            
+            // 如果完全防御（伤害为0），则获得分数
+            if (damage <= 0) {
+                const now = Date.now();
+                // 至少间隔3秒才能再次得分
+                if (now - gameState.lastDefenseTime > 3000) {
+                    gameState.score += 10;
+                    gameState.lastDefenseTime = now;
+                    showScoreEffect();
+                }
+                damage = 0;
+                showMessage(`完美防御！沙尘暴被完全阻挡！+10分`, 'success');
+            } else {
+                // 部分防御也给予少量分数
+                const partialScore = Math.floor(5 * (1 - damage / baseDamage));
+                if (partialScore > 0) {
+                    gameState.score += partialScore;
+                    showScoreEffect(partialScore);
+                }
+            }
+            
+            // 应用伤害
+            gameState.health = Math.max(0, gameState.health - damage);
+            updateUI();
+            
+            // 显示防御效果数值
+            if (totalDefense > 0) {
+                showDefenseEffect(totalDefense);
+            }
+            
+            // 村庄震动效果（只在受到伤害时）
+            if (damage > 0) {
+                document.querySelector('.village').classList.add('shake');
+                setTimeout(() => {
+                    document.querySelector('.village').classList.remove('shake');
+                }, 500);
+                
+                // 显示消息
+                if (damage >= baseDamage * 0.8) {
+                    showMessage(`沙尘暴对村庄造成了${damage}点伤害！需要更多梭梭树防御！`, 'danger');
+                } else {
+                    showMessage(`沙尘暴对村庄造成了${damage}点伤害。梭梭树减轻了部分冲击。`, 'warning');
+                }
+            }
+            
+            // 移除沙尘暴
+            setTimeout(() => {
+                sandstorm.remove();
+                gameState.sandstormActive = false;
+            }, 1000);
+            
+            // 检查游戏结束
+            if (gameState.health <= 0) {
+                endGame();
+            }
+        }
+
+        // 显示防御效果数值
+        function showDefenseEffect(defenseValue) {
+            const defenseText = document.createElement('div');
+            defenseText.className = 'defense-effect';
+            defenseText.textContent = `防御力: ${Math.floor(defenseValue)}`;
+            defenseText.style.left = `${elements.gameArea.offsetWidth / 2 - 50}px`;
+            defenseText.style.top = `${elements.gameArea.offsetHeight / 2}px`;
+            elements.gameArea.appendChild(defenseText);
+            
+            setTimeout(() => {
+                defenseText.remove();
+            }, 1000);
+        }
+
+        // 显示得分效果
+        function showScoreEffect(score = 10) {
+            const scoreElement = document.createElement('div');
+            scoreElement.className = 'score-effect';
+            scoreElement.textContent = `+${score}分`;
+            document.body.appendChild(scoreElement);
+            
+            // 显示动画
+            setTimeout(() => {
+                scoreElement.style.display = 'block';
+                setTimeout(() => {
+                    scoreElement.style.display = 'none';
+                    scoreElement.remove();
+                }, 1000);
+            }, 0);
+        }
+
+        // 结束游戏
+        function endGame() {
+            gameState.gameActive = false;
+            clearInterval(gameState.sandstormInterval);
+            showMessage(`游戏结束！你的最终得分是 ${gameState.score}。`, 'danger');
+        }
+
+        // 更新UI
+        function updateUI() {
+            elements.health.textContent = gameState.health;
+            elements.trees.textContent = gameState.trees;
+            elements.level.textContent = gameState.level;
+            elements.score.textContent = gameState.score;
+        }
+
+        // 显示消息
+        function showMessage(text, type) {
+            elements.message.textContent = text;
+            elements.message.className = 'game-message ' + type;
+        }
+
+        // 更新知识文本
+        function updateKnowledgeText() {
+            elements.knowledgeText.textContent = treeConfig.description;
+        }
+
+        // 初始化游戏
+        window.onload = initGame;
+    </script>
+</body>
+</html>

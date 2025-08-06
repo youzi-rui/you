@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>沙漠绿化者Pro - 生态模拟游戏</title>
+    <style>
+        :root {
+            --sand-color: #E6D5B8;
+            --plant-green: #5DBE7E;
+            --water-blue: #6EC3E0;
+            --danger-red: #FF6B6B;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: url('素材图片3.jpg') no-repeat center center fixed;
+            background-size: cover;
+            text-align: center;
+            position: relative;
+        }
+        
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(245, 249, 245, 0.85);
+            z-index: -1;
+        }
+        
+        .game-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        .game-rules {
+            background: #f0f7f0;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .game-rules h3 {
+            margin-top: 0;
+            color: #2E8B57;
+        }
+        
+        .game-rules ul {
+            padding-left: 20px;
+        }
+        
+        .game-area {
+            width: 100%;
+            height: 400px;
+            background-color: var(--sand-color);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+            margin: 15px 0;
+            background-image: radial-gradient(circle, transparent 10%, rgba(0,0,0,0.05) 10%);
+            background-size: 20px 20px;
+            transition: background 1s;
+        }
+        
+        .tree {
+            width: 30px;
+            height: 45px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 45"><path d="M15 0 Q25 15 15 30 Q5 15 15 0" fill="%235DBE7E"/></svg>');
+            position: absolute;
+            cursor: pointer;
+            transition: all 0.3s;
+            z-index: 2;
+        }
+        
+        .tree.mature {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 45"><path d="M15 0 Q25 18 15 36 Q5 18 15 0" fill="%232E8B57"/></svg>');
+        }
+        
+        .tree.super {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 60"><path d="M15 0 Q25 15 15 45 Q5 15 15 0" fill="%23005F40"/></svg>');
+            height: 60px;
+            animation: glow 2s infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { filter: drop-shadow(0 0 2px #5DBE7E); }
+            to { filter: drop-shadow(0 0 6px #5DBE7E); }
+        }
+        
+        .weather {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        
+        .rain {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="2" height="20" viewBox="0 0 2 20"><line x1="1" y1="0" x2="1" y2="20" stroke="%236EC3E0" stroke-width="1"/></svg>');
+            animation: rain 0.5s linear infinite;
+        }
+        
+        @keyframes rain {
+            to { background-position: 0 20px; }
+        }
+        
+        .sandstorm {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><circle cx="10" cy="10" r="3" fill="%23E6D5B8" opacity="0.5"/></svg>');
+            animation: sandstorm 2s linear infinite;
+        }
+        
+        @keyframes sandstorm {
+            to { background-position: 20px 20px; }
+        }
+        
+        .animal {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            z-index: 1;
+            transition: all 0.5s;
+        }
+        
+        .bird {
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 30"><path d="M30 15 Q20 5 10 15 Q20 25 30 15" fill="%23333"/></svg>');
+            animation: fly 10s linear infinite;
+        }
+        
+        @keyframes fly {
+            0% { transform: translateX(-30px) translateY(10px); }
+            100% { transform: translateX(830px) translateY(20px); }
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            padding: 10px 20px;
+            background-color: #5DBE7E;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+            min-width: 120px;
+        }
+        
+        button:hover {
+            background-color: #2E8B57;
+            transform: translateY(-2px);
+        }
+        
+        button:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        
+        button.special {
+            background-color: #6EC3E0;
+        }
+        
+        button.special:hover {
+            background-color: #3A9ECB;
+        }
+        
+        button.danger {
+            background-color: var(--danger-red);
+        }
+        
+        button.danger:hover {
+            background-color: #E05555;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: #f0f7f0;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        
+        .stat-item {
+            text-align: center;
+            padding: 5px;
+        }
+        
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2E8B57;
+        }
+        
+        .progress-container {
+            height: 10px;
+            background: #eee;
+            border-radius: 5px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(to right, #5DBE7E, #2E8B57);
+            width: 0%;
+            transition: width 0.5s;
+        }
+        
+        .event-log {
+            height: 80px;
+            overflow-y: auto;
+            text-align: left;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .log-entry {
+            margin: 3px 0;
+            padding: 2px 5px;
+            border-left: 3px solid #5DBE7E;
+        }
+        
+        .log-entry.warning {
+            border-left-color: orange;
+        }
+        
+        .log-entry.danger {
+            border-left-color: var(--danger-red);
+        }
+        
+        .back-btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 8px 16px;
+            background: #5DBE7E;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: all 0.2s;
+        }
+        
+        .back-btn:hover {
+            background: #2E8B57;
+        }
+        
+        .tooltip {
+            position: absolute;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 12px;
+            pointer-events: none;
+            z-index: 10;
+            transform: translateY(-100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>沙漠绿化者Pro</h1>
+        <p>通过种植梭梭树恢复沙漠生态，应对各种挑战！</p>
+        
+        <div class="game-rules">
+            <h3>游戏规则：</h3>
+            <ul>
+                <li><strong>种植树木</strong>：点击"种植梭梭树"按钮在沙漠中种植树木</li>
+                <li><strong>培育树木</strong>：点击树苗使其成熟，成熟树木可提供更多生态分</li>
+                <li><strong>浇水施肥</strong>：使用水和肥料加速树木生长，肥料可使成熟树木进化为超级梭梭</li>
+                <li><strong>升级工具</strong>：积累30分可升级工具，提高种植上限和浇水次数</li>
+                <li><strong>应对天气</strong>：随机天气会影响游戏，下雨有利，沙尘暴有害</li>
+                <li><strong>目标</strong>：尽可能创造更多超级梭梭，提高生态分数</li>
+            </ul>
+        </div>
+        
+        <div class="stats">
+            <div class="stat-item">
+                <div class="stat-value" id="tree-count">0</div>
+                <div>已种植树木</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="tree-progress"></div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="eco-score">0</div>
+                <div>生态指数</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="eco-progress"></div>
+                </div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-value" id="water-count">10</div>
+                <div>剩余浇水</div>
+                <div class="progress-container">
+                    <div class="progress-bar" id="water-progress"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="game-area" id="gameArea">
+            <div class="weather rain" id="rainEffect"></div>
+            <div class="weather sandstorm" id="sandstormEffect"></div>
+        </div>
+        
+        <div class="event-log" id="eventLog">
+            <div class="log-entry">游戏开始！尝试种植第一棵梭梭树</div>
+        </div>
+        
+        <div class="controls">
+            <button id="plantBtn">种植梭梭树</button>
+            <button id="waterBtn" class="special">浇水 (剩余: <span id="water-text">10</span>)</button>
+            <button id="fertilizeBtn" class="special">施肥 (剩余: <span id="fertilize-text">5</span>)</button>
+            <button id="upgradeBtn">升级工具 (30分)</button>
+            <button id="resetBtn" class="danger">重新开始</button>
+        </div>
+        <button onclick="window.location.href=''" 
+            style="padding: 10px 20px; background-color: #6c757d; color: white; border: none; border-radius: 5px; cursor: pointer;">
+        END
+    </button>
+</div>
+    </div>
+
+    <script>
+        // 游戏状态
+        const state = {
+            trees: 0,
+            score: 0,
+            water: 10,  // 增加初始浇水次数
+            fertilizer: 5,  // 增加初始肥料数量
+            maxTrees: 30,  // 增加最大树木数量
+            toolLevel: 1,
+            cooldowns: {
+                planting: false,
+                watering: false
+            },
+            weather: 'sunny',
+            weatherTimer: null,
+            resourceTimer: null
+        };
+
+        // DOM元素
+        const gameArea = document.getElementById('gameArea');
+        const treeCountEl = document.getElementById('tree-count');
+        const ecoScoreEl = document.getElementById('eco-score');
+        const waterCountEl = document.getElementById('water-count');
+        const plantBtn = document.getElementById('plantBtn');
+        const waterBtn = document.getElementById('waterBtn');
+        const fertilizeBtn = document.getElementById('fertilizeBtn');
+        const upgradeBtn = document.getElementById('upgradeBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const eventLog = document.getElementById('eventLog');
+        const tooltip = document.getElementById('tooltip');
+        const rainEffect = document.getElementById('rainEffect');
+        const sandstormEffect = document.getElementById('sandstormEffect');
+
+        // 种植树木
+        plantBtn.addEventListener('click', () => {
+            if (state.cooldowns.planting) return;
+            
+            if (state.trees >= state.maxTrees) {
+                addLog(`❌ 已达到最大种植数量 ${state.maxTrees} 棵！`, 'warning');
+                return;
+            }
+
+            state.cooldowns.planting = true;
+            plantBtn.disabled = true;
+            
+            setTimeout(() => {
+                state.cooldowns.planting = false;
+                plantBtn.disabled = false;
+                actuallyPlantTree();
+            }, 100);
+        });
+
+        function actuallyPlantTree() {
+            const tree = document.createElement('div');
+            tree.className = 'tree';
+            
+            const x = Math.random() * (gameArea.offsetWidth - 30);
+            const y = Math.random() * (gameArea.offsetHeight - 45);
+            
+            tree.style.left = `${x}px`;
+            tree.style.top = `${y}px`;
+            
+            tree.addEventListener('click', function() {
+                if (this.classList.contains('super')) return;
+                
+                if (!this.classList.contains('mature')) {
+                    this.classList.add('mature');
+                    state.score += 3;  // 从2增加到3
+                    addLog("🌱 树木成熟了！+3生态分");
+                    updateGame();
+                } else if (state.fertilizer > 0 && Math.random() > 0.3) {  // 成功率从0.5提高到0.7
+                    this.classList.add('super');
+                    state.score += 8;  // 从5增加到8
+                    addLog("✨ 树木进化为超级梭梭！+8生态分");
+                    updateGame();
+                }
+            });
+
+            tree.addEventListener('mousemove', (e) => {
+                const status = tree.classList.contains('super') ? '超级梭梭' : 
+                              tree.classList.contains('mature') ? '成熟树木' : '树苗';
+                showTooltip(e, status);
+            });
+            
+            tree.addEventListener('mouseout', hideTooltip);
+
+            gameArea.appendChild(tree);
+            state.trees++;
+            
+            // 10%几率获得额外资源
+            if (Math.random() > 0.9) {
+                state.water++;
+                state.fertilizer++;
+                addLog("🎁 幸运！获得额外水和肥料", 'warning');
+            }
+            
+            addLog("🌵 种植了新的梭梭树");
+            updateGame();
+            
+            if (Math.random() > 0.9 && state.score > 10) {
+                spawnBird();
+            }
+        }
+
+        // 浇水功能
+        waterBtn.addEventListener('click', () => {
+            if (state.cooldowns.watering || state.water <= 0) return;
+            
+            state.cooldowns.watering = true;
+            waterBtn.disabled = true;
+            
+            rainEffect.style.opacity = '0.3';
+            setTimeout(() => {
+                rainEffect.style.opacity = '0';
+            }, 1000);
+            
+            setTimeout(() => {
+                state.cooldowns.watering = false;
+                waterBtn.disabled = false;
+            }, 2000);
+
+            state.water--;
+            const trees = document.querySelectorAll('.tree:not(.super)');
+            
+            if (trees.length === 0) {
+                addLog("💧 浇水了，但没有树木可以受益", 'warning');
+                updateGame();
+                return;
+            }
+            
+            trees.forEach(tree => {
+                tree.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    tree.style.transform = 'scale(1)';
+                }, 300);
+
+                if (Math.random() > 0.6 && !tree.classList.contains('mature')) {
+                    tree.classList.add('mature');
+                    state.score += 1;
+                }
+            });
+
+            addLog(`💧 浇灌了 ${trees.length} 棵树木`);
+            updateGame();
+        });
+
+        // 施肥功能
+        fertilizeBtn.addEventListener('click', () => {
+            if (state.fertilizer <= 0) {
+                addLog("❌ 没有剩余肥料了！", 'warning');
+                return;
+            }
+            
+            const trees = document.querySelectorAll('.tree.mature:not(.super)');
+            if (trees.length === 0) {
+                addLog("❌ 没有可以施肥的成熟树木", 'warning');
+                return;
+            }
+            
+            state.fertilizer--;
+            
+            const shuffled = Array.from(trees).sort(() => 0.5 - Math.random());
+            const selected = shuffled.slice(0, 3);
+            
+            selected.forEach(tree => {
+                if (Math.random() > 0.3) {  // 成功率从0.5提高到0.7
+                    tree.classList.add('super');
+                    state.score += 8;  // 从5增加到8
+                }
+            });
+            
+            addLog(`🧪 使用肥料，${selected.length}棵树木有机会进化为超级梭梭`);
+            updateGame();
+        });
+
+        // 升级工具
+        upgradeBtn.addEventListener('click', () => {
+            if (state.score < 30) {  // 从50降低到30
+                addLog(`❌ 需要30生态分才能升级 (当前: ${state.score})`, 'warning');
+                return;
+            }
+            
+            state.score -= 30;  // 从50降低到30
+            state.toolLevel++;
+            state.maxTrees += 5;
+            state.water += 3;
+            
+            addLog(`🛠️ 工具升级到 ${state.toolLevel} 级！最大树木+5，浇水+3`);
+            updateGame();
+        });
+
+        // 重新开始
+        resetBtn.addEventListener('click', () => {
+            if (confirm('确定要重新开始游戏吗？所有进度将丢失！')) {
+                gameArea.innerHTML = '';
+                state.trees = 0;
+                state.score = 0;
+                state.water = 10;
+                state.fertilizer = 5;
+                state.toolLevel = 1;
+                state.maxTrees = 30;
+                state.cooldowns = { planting: false, watering: false };
+                
+                clearWeather();
+                clearInterval(state.resourceTimer);
+                
+                addLog("🔄 游戏已重置");
+                updateGame();
+                startWeatherEvents();
+                startResourceRecovery();
+            }
+        });
+
+        // 生成小鸟
+        function spawnBird() {
+            const bird = document.createElement('div');
+            bird.className = 'animal bird';
+            bird.style.top = `${20 + Math.random() * 50}px`;
+            gameArea.appendChild(bird);
+            
+            setTimeout(() => {
+                bird.remove();
+            }, 10000);
+            
+            addLog("🐦 一只小鸟被吸引到绿洲！", 'warning');
+        }
+
+        // 资源自动恢复
+        function startResourceRecovery() {
+            state.resourceTimer = setInterval(() => {
+                if (state.water < 10 + state.toolLevel) {
+                    state.water++;
+                    addLog("💦 恢复了1次浇水机会", 'warning');
+                    updateGame();
+                }
+                
+                // 每2分钟恢复1次肥料
+                if (Date.now() % 120000 < 1000 && state.fertilizer < 5 + state.toolLevel) {
+                    state.fertilizer++;
+                    addLog("🧴 恢复了1次施肥机会", 'warning');
+                    updateGame();
+                }
+            }, 60000); // 每分钟检查一次
+        }
+
+        // 随机天气事件
+        function startWeatherEvents() {
+            if (state.weatherTimer) clearTimeout(state.weatherTimer);
+            
+            state.weatherTimer = setTimeout(() => {
+                const weatherTypes = ['sunny', 'rain', 'sandstorm'];
+                const weights = [
+                    0.7,
+                    0.2 + (state.score / 200),
+                    0.1 - (state.score / 300)
+                ];
+                
+                const random = Math.random();
+                let acc = 0;
+                let selectedWeather = 'sunny';
+                
+                for (let i = 0; i < weatherTypes.length; i++) {
+                    acc += weights[i];
+                    if (random < acc) {
+                        selectedWeather = weatherTypes[i];
+                        break;
+                    }
+                }
+                
+                changeWeather(selectedWeather);
+                startWeatherEvents();
+            }, 15000 + Math.random() * 20000);
+        }
+
+        function changeWeather(type) {
+            state.weather = type;
+            
+            switch(type) {
+                case 'rain':
+                    rainEffect.style.opacity = '0.3';
+                    sandstormEffect.style.opacity = '0';
+                    addLog("🌧️ 开始下雨了！树木生长加快", 'warning');
+                    
+                    state.water = Math.min(state.water + 2, 10 + state.toolLevel); // 下雨恢复更多水
+                    break;
+                    
+                case 'sandstorm':
+                    sandstormEffect.style.opacity = '0.3';
+                    rainEffect.style.opacity = '0';
+                    addLog("🌪️ 沙尘暴来袭！小心树木受损", 'danger');
+                    
+                    if (Math.random() > 0.7 && state.trees > 0) {
+                        const trees = document.querySelectorAll('.tree:not(.super)');
+                        if (trees.length > 0) {
+                            const toRemove = Math.floor(Math.random() * Math.min(3, trees.length));
+                            for (let i = 0; i < toRemove; i++) {
+                                trees[i].remove();
+                                state.trees--;
+                            }
+                            addLog(`💨 沙尘暴摧毁了 ${toRemove} 棵树木`, 'danger');
+                        }
+                    }
+                    break;
+                    
+                default:
+                    clearWeather();
+                    addLog("☀️ 天气转晴了");
+            }
+            
+            updateGame();
+        }
+
+        function clearWeather() {
+            rainEffect.style.opacity = '0';
+            sandstormEffect.style.opacity = '0';
+            state.weather = 'sunny';
+        }
+
+        // 工具提示
+        function showTooltip(event, text) {
+            tooltip.textContent = text;
+            tooltip.style.left = `${event.pageX + 10}px`;
+            tooltip.style.top = `${event.pageY - 10}px`;
+            tooltip.style.opacity = '1';
+        }
+
+        function hideTooltip() {
+            tooltip.style.opacity = '0';
+        }
+
+        // 事件日志
+        function addLog(message, type = 'normal') {
+            const entry = document.createElement('div');
+            entry.className = `log-entry ${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            eventLog.appendChild(entry);
+            eventLog.scrollTop = eventLog.scrollHeight;
+            
+            if (eventLog.children.length > 20) {
+                eventLog.removeChild(eventLog.children[0]);
+            }
+        }
+
+        // 更新游戏状态
+        function updateGame() {
+            treeCountEl.textContent = state.trees;
+            ecoScoreEl.textContent = state.score;
+            waterCountEl.textContent = state.water;
+            document.getElementById('water-text').textContent = state.water;
+            document.getElementById('fertilize-text').textContent = state.fertilizer;
+            
+            document.getElementById('tree-progress').style.width = `${(state.trees / state.maxTrees) * 100}%`;
+            document.getElementById('eco-progress').style.width = `${Math.min(state.score / 100, 1) * 100}%`;
+            document.getElementById('water-progress').style.width = `${(state.water / (10 + state.toolLevel)) * 100}%`;
+            
+            if (state.score > 50) {
+                gameArea.style.background = 'linear-gradient(to bottom, #E6D5B8, #88C999)';
+            } else if (state.score > 20) {
+                gameArea.style.background = 'linear-gradient(to bottom, #E6D5B8, #A8D8A8)';
+            } else {
+                gameArea.style.background = '#E6D5B8';
+            }
+            
+            plantBtn.disabled = state.cooldowns.planting || state.trees >= state.maxTrees;
+            waterBtn.disabled = state.cooldowns.watering || state.water <= 0;
+            fertilizeBtn.disabled = state.fertilizer <= 0;
+            upgradeBtn.disabled = state.score < 30;  // 从50降低到30
+            
+            if (state.score === 15) {
+                addLog("✨ 新功能解锁：施肥可以创造超级梭梭树了！", 'warning');
+            }
+            
+            if (state.score === 40) {
+                addLog("✨ 新功能解锁：工具升级现在可提高最大树木数量！", 'warning');
+            }
+        }
+
+        // 初始化游戏
+        function initGame() {
+            gameArea.innerHTML = `
+                <div class="weather rain" id="rainEffect"></div>
+                <div class="weather sandstorm" id="sandstormEffect"></div>
+            `;
+            
+            rainEffect = document.getElementById('rainEffect');
+            sandstormEffect = document.getElementById('sandstormEffect');
+            
+            updateGame();
+            startWeatherEvents();
+            startResourceRecovery();
+            
+            showTooltip({
+                pageX: plantBtn.getBoundingClientRect().left + plantBtn.offsetWidth/2,
+                pageY: plantBtn.getBoundingClientRect().top
+            }, "点击开始快速种植");
+            setTimeout(hideTooltip, 2000);
+        }
+
+        // 启动游戏
+        initGame();
+    </script>
+</body>
+</html>

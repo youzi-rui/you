@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>亿棵梭梭树点亮绿色经纬：地球"深呼吸"的奇迹密码</title>
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <style type="text/tailwindcss">
+        @theme {
+            --color-primary: #22c55e;
+            --color-secondary: #16a34a;
+            --color-dark: #065f46;
+            --color-light: #ecfdf5;
+            --font-inter: 'Inter', sans-serif;
+        }
+        
+        @utility fade-in {
+            animation: fadeIn 1.5s ease-in-out forwards;
+        }
+        
+        @utility slide-up {
+            animation: slideUp 1.2s ease-out forwards;
+        }
+        
+        @utility pulse-slow {
+            animation: pulse 3s infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        body {
+            font-family: var(--font-inter);
+            overflow-x: hidden;
+        }
+        
+        .hero-bg {
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('https://picsum.photos/id/130/1920/1080');
+            background-size: cover;
+            background-position: center;
+        }
+    </style>
+</head>
+<body class="bg-light text-dark">
+    <!-- 英雄区域 - 封面主体 -->
+    <section class="hero-bg h-screen flex items-center justify-center relative overflow-hidden">
+       <div class="absolute inset-0 z-0">
+            <img src="素材图片1.jpg" alt="沙漠中的梭梭树" class="w-full h-full object-cover">
+            <div class="absolute inset-0 bg-gradient-to-b from-dark/70 via-dark/50 to-dark/80"></div>
+        </div>
+        <!-- 主要内容 -->
+        <div class="container mx-auto px-4 z-10 text-center">
+            <h1 class="text-[clamp(2.5rem,8vw,5rem)] font-bold text-light mb-6 fade-in" style="animation-delay: 0.3s">
+                亿棵梭梭树<br>点亮绿色经纬
+            </h1>
+            <p class="text-[clamp(1rem,3vw,1.5rem)] text-light/90 max-w-3xl mx-auto mb-10 slide-up" style="animation-delay: 0.6s">
+                地球"深呼吸"的<br>奇迹密码
+            </p>
+            <div class="flex flex-col sm:flex-row justify-center gap-4 slide-up" style="animation-delay: 0.9s">
+                <a href="#story" class="px-8 py-3 bg-primary hover:bg-secondary text-white font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg">
+                    探索绿色奇迹
+                </a>
+            </div>
+            
+            <!-- 滚动提示 -->
+            <div class="absolute bottom-8 left-1/2 transform -translate-x-1/2 pulse-slow">
+                <a href="#story" class="text-white/80 hover:text-white">
+                    <i class="fas fa-chevron-down text-3xl"></i>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 装饰性元素 - 漂浮粒子 -->
+        <div class="absolute inset-0" id="particles"></div>
+    </section>
+
+    <script>
+        // 简单粒子背景效果
+        document.addEventListener('DOMContentLoaded', function() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                const size = Math.random() * 5 + 1;
+                const posX = Math.random() * 100;
+                const posY = Math.random() * 100;
+                const duration = Math.random() * 20 + 10;
+                const delay = Math.random() * 5;
+                
+                particle.style.position = 'absolute';
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.background = 'rgba(34, 197, 94, 0.7)';
+                particle.style.borderRadius = '50%';
+                particle.style.left = `${posX}%`;
+                particle.style.top = `${posY}%`;
+                particle.style.animation = `float ${duration}s ease-in-out ${delay}s infinite`;
+                particle.style.opacity = Math.random() * 0.5 + 0.3;
+                
+                particlesContainer.appendChild(particle);
+            }
+            
+            // 添加浮动动画
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes float {
+                    0%, 100% {
+                        transform: translate(0, 0) rotate(0deg);
+                    }
+                    50% {
+                        transform: translate(${Math.random() * 20 - 10}px, ${Math.random() * 20 - 10}px) rotate(360deg);
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+        });
+    </script>
+</body>
+</html>

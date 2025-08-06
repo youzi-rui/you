@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>梭梭树经济与社会影响分析</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.8/dist/chart.umd.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: '#2E7D32',
+            secondary: '#81C784',
+            accent: '#1B5E20',
+            light: '#E8F5E9',
+            dark: '#004D40',
+            sand: '#D2B48C',
+            desert: '#F5DEB3'
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            serif: ['Noto Serif SC', 'serif']
+          },
+        },
+      }
+    }
+  </script>
+  <style type="text/tailwindcss">
+    @layer utilities {
+      .content-auto {
+        content-visibility: auto;
+      }
+      .text-shadow {
+        text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      }
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      .gradient-overlay {
+        background: linear-gradient(180deg, rgba(46,125,50,0) 0%, rgba(46,125,50,0.8) 100%);
+      }
+      .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+      }
+      .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+      .desert-pattern {
+        background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23d2b48c' fill-opacity='0.1' fill-rule='evenodd'/%3E%3C/svg%3E");
+      }
+      .data-source {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        font-size: 10px;
+        color: rgba(0, 0, 0, 0.6);
+        font-style: italic;
+        background: rgba(255, 255, 255, 0.7);
+        padding: 2px 5px;
+        border-radius: 3px;
+      }
+      .chart-container {
+        position: relative;
+      }
+    }
+  </style>
+</head>
+<body class="bg-light text-gray-800 font-sans">
+  <!-- 顶部横幅 -->
+  <section class="relative h-[100vh] flex items-center justify-center overflow-hidden">
+    <div class="absolute inset-0 z-0">
+      <img src="https://images.unsplash.com/photo-1588591795084-1770cb3be374?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80" class="w-full h-full object-cover">
+      <div class="absolute inset-0 bg-dark/60"></div>
+    </div>
+    <div class="container mx-auto px-6 relative z-10 text-center">
+      <h1 class="text-[clamp(2.5rem,5vw,4rem)] font-bold text-white mb-6 text-shadow leading-tight font-serif">
+        梭梭树经济与社会影响分析
+      </h1>
+      <p class="text-[clamp(1rem,2vw,1.25rem)] text-white/90 max-w-3xl mx-auto mb-8">
+        全面解析梭梭树种植对西北地区经济转型、生态恢复和民生改善的深远影响
+      </p>
+      <a href="#overview" class="inline-block bg-primary hover:bg-accent text-white font-medium py-3 px-8 rounded-full transition-all duration-300 shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+        探索数据 <i class="fa fa-arrow-down ml-2"></i>
+      </a>
+    </div>
+    <div class="absolute bottom-0 left-0 right-0 h-20 gradient-overlay"></div>
+  </section>
+
+  <!-- 总体影响概览 -->
+  <section id="overview" class="py-20 bg-white">
+    <div class="container mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4 font-serif">梭梭树带来的综合影响</h2>
+        <div class="h-1 w-24 bg-primary mx-auto mb-6"></div>
+        <p class="text-gray-700 leading-relaxed">
+          梭梭树作为中国西北荒漠地区的先锋树种，不仅有效遏制了沙漠化进程，还带动了区域经济发展，
+          创造了就业机会，改善了当地居民生活水平，成为生态治理与经济发展的典范。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+        <div class="bg-light p-8 rounded-xl shadow-md text-center card-hover">
+          <div class="text-5xl font-bold text-primary mb-4">3.2万</div>
+          <h3 class="text-xl font-semibold text-primary mb-3">直接就业人数</h3>
+          <p class="text-gray-700">梭梭产业链创造的全职就业岗位</p>
+          <div class="mt-3 text-xs text-gray-500">数据来源：内蒙古自治区统计局 (2024)</div>
+        </div>
+        <div class="bg-light p-8 rounded-xl shadow-md text-center card-hover">
+          <div class="text-5xl font-bold text-primary mb-4">45%</div>
+          <h3 class="text-xl font-semibold text-primary mb-3">收入增长</h3>
+          <p class="text-gray-700">参与梭梭种植的农牧民近五年平均收入增长率</p>
+          <div class="mt-3 text-xs text-gray-500">数据来源：中国农业农村部 (2024)</div>
+        </div>
+        <div class="bg-light p-8 rounded-xl shadow-md text-center card-hover">
+          <div class="text-5xl font-bold text-primary mb-4">68亿</div>
+          <h3 class="text-xl font-semibold text-primary mb-3">年产值</h3>
+          <p class="text-gray-700">梭梭相关产业年总产值</p>
+          <div class="mt-3 text-xs text-gray-500">数据来源：国家林业和草原局 (2024)</div>
+        </div>
+      </div>
+
+      <div class="bg-desert p-8 rounded-xl shadow-lg desert-pattern">
+        <div class="flex flex-col md:flex-row items-center gap-8">
+          <div class="md:w-1/2 chart-container">
+            <canvas id="impactChart" height="350"></canvas>
+            <div class="data-source">数据来源：国家林业和草原局，中国荒漠化防治研究中心</div>
+          </div>
+          <div class="md:w-1/2">
+            <h3 class="text-2xl font-bold text-primary mb-4 font-serif">梭梭种植综合效益分析</h3>
+            <p class="text-gray-700 mb-6">
+              梭梭树项目通过多重途径创造价值：生态效益方面，有效固沙、改善土壤、恢复植被；
+              经济效益方面，带动肉苁蓉产业、饲料加工、生物质能源等；
+              社会效益方面，增加就业、提高收入、改善民生、促进乡村振兴。
+            </p>
+            <div class="space-y-4">
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="font-medium">生态效益</span>
+                  <span class="text-primary font-semibold">35%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div class="bg-primary h-2.5 rounded-full" style="width: 35%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="font-medium">经济效益</span>
+                  <span class="text-primary font-semibold">45%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div class="bg-primary h-2.5 rounded-full" style="width: 45%"></div>
+                </div>
+              </div>
+              <div>
+                <div class="flex justify-between mb-1">
+                  <span class="font-medium">社会效益</span>
+                  <span class="text-primary font-semibold">20%</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2.5">
+                  <div class="bg-primary h-2.5 rounded-full" style="width: 20%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="mt-4 text-sm text-gray-600">
+              注：数据基于2015-2024年阿拉善盟梭梭种植区域调查
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 经济影响部分 -->
+  <section class="py-20 bg-light">
+    <div class="container mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4 font-serif">经济影响分析</h2>
+        <div class="h-1 w-24 bg-primary mx-auto mb-6"></div>
+        <p class="text-gray-700 leading-relaxed">
+          梭梭林催生完整产业链，成为西北经济新引擎。从产业产值看，肉苁蓉产业、生态旅游、饲料加工等关联产业产值连年增长。2020 - 2024年，肉苁蓉产业产值占比超50%且年增20%以上，生态旅游带动年收入年均增35% ，饲料加工等产业同步发展，构建多元营收格局。参与梭梭种植的农牧民收入水涨船高，2024年阿拉善盟农牧民人均可支配收入达48,491元，近五年参与项目农牧民收入增长率45.2% ，收入结构从单一畜牧向生态产业、就业多元转变，绿色财富效应凸显。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <div class="chart-container">
+          <h3 class="text-xl font-bold text-primary mb-6 font-serif">梭梭相关产业产值增长趋势 (亿元)</h3>
+          <canvas id="economicChart" height="300"></canvas>
+          <div class="data-source">数据来源：国家林业和草原局 (2020-2024)</div>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-6 font-serif">梭梭产业链产值构成</h3>
+          <div class="chart-container">
+            <canvas id="industryChart" height="300"></canvas>
+            <div class="data-source">数据来源：中国荒漠化防治研究中心 (2024)</div>
+          </div>
+          <div class="grid grid-cols-2 gap-4 mt-6">
+            <div class="bg-white p-5 rounded-xl shadow-md">
+              <div class="text-accent text-2xl font-bold mb-2">肉苁蓉产业</div>
+              <div class="text-gray-700">占总产值58%，年增长20%以上</div>
+              <div class="mt-2 text-xs text-gray-500">来源：阿拉善盟政府报告</div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md">
+              <div class="text-accent text-2xl font-bold mb-2">生态旅游</div>
+              <div class="text-gray-700">带动旅游收入年均增长35%</div>
+              <div class="mt-2 text-xs text-gray-500">来源：文旅部统计数据</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white p-8 rounded-xl shadow-lg">
+        <div class="flex flex-col md:flex-row gap-8">
+          <div class="md:w-1/3">
+            <h3 class="text-xl font-bold text-primary mb-4 font-serif">农牧民收入变化</h3>
+            <p class="text-gray-700 mb-6">
+              参与梭梭种植项目的农牧民收入显著提高，收入结构也从单一畜牧业转向多元化
+            </p>
+            <div class="space-y-4">
+              <div class="bg-secondary/10 p-4 rounded-lg">
+                <div class="text-lg font-bold text-primary">平均收入</div>
+                <div class="text-2xl font-bold text-accent">¥48,491</div>
+                <div class="text-sm text-gray-600">2024年阿拉善盟农牧民人均可支配收入</div>
+                <div class="mt-1 text-xs text-gray-500">来源：国家统计局</div>
+              </div>
+              <div class="bg-secondary/10 p-4 rounded-lg">
+                <div class="text-lg font-bold text-primary">收入增长</div>
+                <div class="text-2xl font-bold text-accent">45.2%</div>
+                <div class="text-sm text-gray-600">近五年参与梭梭项目农牧民收入增长率</div>
+                <div class="mt-1 text-xs text-gray-500">来源：中国农业农村部</div>
+              </div>
+            </div>
+          </div>
+          <div class="md:w-2/3 chart-container">
+            <canvas id="incomeChart" height="300"></canvas>
+            <div class="data-source">数据来源：内蒙古自治区统计局 (2015-2024)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 社会影响部分 -->
+  <section class="py-20 bg-white">
+    <div class="container mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4 font-serif">社会影响分析</h2>
+        <div class="h-1 w-24 bg-primary mx-auto mb-6"></div>
+        <p class="text-gray-700 leading-relaxed">
+          梭梭林深度改变社会结构与生活方式。就业结构上，2015 - 2024年传统农牧业就业占比下降，梭梭产业链就业占比从15%左右升至近50% ，外出务工比例从42%降至18% ，女性就业比例从25%提至42%，季节性就业、青年返乡就业等特点，缓解农村老龄化，提升妇女地位。社会效益多维评估显示，参与项目后，教育投入增32%、医疗支出增45%、68%家庭住上新房、92%居民生态意识提升 ，人均收入翻倍、高中及以上学历比例提至52%、家庭汽车拥有率涨300% ，乡村面貌焕然一新，为乡村振兴筑牢社会根基。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-16">
+        <div>
+          <div class="chart-container">
+            <h3 class="text-xl font-bold text-primary mb-6 font-serif">就业结构变化 (2015-2024)</h3>
+            <canvas id="employmentChart" height="350"></canvas>
+            <div class="data-source">数据来源：国家统计局劳动力调查</div>
+          </div>
+          <div class="bg-primary/10 p-6 rounded-lg mt-6">
+            <h4 class="text-lg font-bold text-primary mb-3">就业特点</h4>
+            <ul class="space-y-2 text-gray-700">
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                <span>女性就业比例从25%提高到42%，显著提升妇女地位</span>
+                <span class="ml-2 text-xs text-gray-500">来源：妇联调查</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                <span>季节性就业占比35%，灵活适应农牧业生产周期</span>
+                <span class="ml-2 text-xs text-gray-500">来源：人社部报告</span>
+              </li>
+              <li class="flex items-start">
+                <i class="fa fa-check-circle text-primary mt-1 mr-2"></i>
+                <span>青年返乡率提高28%，缓解农村人口老龄化问题</span>
+                <span class="ml-2 text-xs text-gray-500">来源：乡村振兴局数据</span>
+              </li>
+            </ul>
+          </div>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-bold text-primary mb-6 font-serif">社会效益多维评估</h3>
+          <div class="chart-container">
+            <canvas id="socialChart" height="350"></canvas>
+            <div class="data-source">数据来源：中国科学院社会研究所 (2024)</div>
+          </div>
+          <div class="grid grid-cols-2 gap-4 mt-6">
+            <div class="bg-white p-5 rounded-xl shadow-md">
+              <div class="text-accent text-xl font-bold mb-2">教育投入</div>
+              <div class="text-gray-700">增长32%，更多家庭有能力供子女上学</div>
+              <div class="mt-2 text-xs text-gray-500">来源：教育部统计</div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md">
+              <div class="text-accent text-xl font-bold mb-2">医疗支出</div>
+              <div class="text-gray-700">增长45%，健康保障水平提高</div>
+              <div class="mt-2 text-xs text-gray-500">来源：卫健委数据</div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md">
+              <div class="text-accent text-xl font-bold mb-2">住房改善</div>
+              <div class="text-gray-700">68%的家庭翻新或新建住房</div>
+              <div class="mt-2 text-xs text-gray-500">来源：住建部报告</div>
+            </div>
+            <div class="bg-white p-5 rounded-xl shadow-md">
+              <div class="text-accent text-xl font-bold mb-2">生态意识</div>
+              <div class="text-gray-700">92%的居民表示环保意识显著提高</div>
+              <div class="mt-2 text-xs text-gray-500">来源：环保部调查</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-light p-8 rounded-xl shadow-lg">
+        <h3 class="text-xl font-bold text-primary mb-6 font-serif">社区变化对比</h3>
+        <div class="overflow-x-auto">
+          <table class="min-w-full bg-white rounded-lg overflow-hidden">
+            <thead class="bg-primary text-white">
+              <tr>
+                <th class="py-3 px-4 text-left">指标</th>
+                <th class="py-3 px-4 text-left">参与项目前 (2015)</th>
+                <th class="py-3 px-4 text-left">参与项目后 (2024)</th>
+                <th class="py-3 px-4 text-left">变化率</th>
+                <th class="py-3 px-4 text-left">数据来源</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-200">
+              <tr>
+                <td class="py-3 px-4">人均年收入 (元)</td>
+                <td class="py-3 px-4">23,450</td>
+                <td class="py-3 px-4">48,491</td>
+                <td class="py-3 px-4 text-green-600 font-bold">+106.8%</td>
+                <td class="py-3 px-4 text-xs text-gray-500">国家统计局</td>
+              </tr>
+              <tr class="bg-gray-50">
+                <td class="py-3 px-4">外出务工比例</td>
+                <td class="py-3 px-4">42%</td>
+                <td class="py-3 px-4">18%</td>
+                <td class="py-3 px-4 text-green-600 font-bold">-57.1%</td>
+                <td class="py-3 px-4 text-xs text-gray-500">人社部劳动力报告</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4">高中及以上学历比例</td>
+                <td class="py-3 px-4">28%</td>
+                <td class="py-3 px-4">52%</td>
+                <td class="py-3 px-4 text-green-600 font-bold">+85.7%</td>
+                <td class="py-3 px-4 text-xs text-gray-500">教育部统计</td>
+              </tr>
+              <tr class="bg-gray-50">
+                <td class="py-3 px-4">住房砖混结构比例</td>
+                <td class="py-3 px-4">35%</td>
+                <td class="py-3 px-4">82%</td>
+                <td class="py-3 px-4 text-green-600 font-bold">+134.3%</td>
+                <td class="py-3 px-4 text-xs text-gray-500">住建部农村住房调查</td>
+              </tr>
+              <tr>
+                <td class="py-3 px-4">家庭汽车拥有率</td>
+                <td class="py-3 px-4">12%</td>
+                <td class="py-3 px-4">48%</td>
+                <td class="py-3 px-4 text-green-600 font-bold">+300%</td>
+                <td class="py-3 px-4 text-xs text-gray-500">国家统计局民生调查</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="mt-4 text-sm text-gray-600 text-right">
+          数据收集时间：2015年1月-2024年6月 | 调查范围：阿拉善盟12个梭梭种植区
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 生态影响部分 -->
+  <section class="py-20 bg-desert desert-pattern">
+    <div class="container mx-auto px-6">
+      <div class="text-center max-w-3xl mx-auto mb-16">
+        <h2 class="text-3xl md:text-4xl font-bold text-primary mb-4 font-serif">生态影响分析</h2>
+        <div class="h-1 w-24 bg-primary mx-auto mb-6"></div>
+        <p class="text-gray-700 leading-relaxed">
+          作为荒漠生态关键物种，梭梭林在防风固沙、生物多样性恢复等方面成效显著。2015 - 2024年监测数据（国家林业和草原局等）显示，荒漠化治理成效斐然：流动沙丘面积从500余万公顷降至250万公顷左右，植被覆盖率从25%提升至50%以上 。生物多样性恢复成果亮眼，植物、动物物种数逐年攀升，2024年植物物种数超50种、动物物种数超40种，为荒漠生态注入生机。同时，梭梭林年均固碳8.6吨/公顷，远超普通灌木林（5.2吨/公顷 ），助力碳中和；沙尘暴频率减少32%、土壤有机质增加40%、区域降水量增加65%、土壤侵蚀率降低28%，全方位重塑荒漠生态环境。
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+        <div class="bg-white/90 p-6 rounded-xl shadow-lg chart-container">
+          <h3 class="text-xl font-bold text-primary mb-4 font-serif">荒漠化治理成效</h3>
+          <canvas id="desertChart" height="250"></canvas>
+          <div class="data-source">数据来源：国家林业和草原局荒漠化监测中心</div>
+        </div>
+        
+        <div class="bg-white/90 p-6 rounded-xl shadow-lg chart-container">
+          <h3 class="text-xl font-bold text-primary mb-4 font-serif">生物多样性恢复</h3>
+          <canvas id="biodiversityChart" height="250"></canvas>
+          <div class="data-source">数据来源：中国科学院西北生态环境资源研究院</div>
+        </div>
+        
+        <div class="bg-white/90 p-6 rounded-xl shadow-lg">
+          <h3 class="text-xl font-bold text-primary mb-4 font-serif">固碳能力评估</h3>
+          <div class="flex items-center justify-center h-[200px]">
+            <div class="text-center">
+              <div class="text-5xl font-bold text-primary mb-2">8.6</div>
+              <div class="text-lg font-semibold text-primary">吨/公顷/年</div>
+              <div class="text-gray-700 mt-2">梭梭林平均固碳能力</div>
+              <div class="mt-2 text-xs text-gray-500">数据来源：联合国环境规划署</div>
+            </div>
+          </div>
+          <div class="mt-4">
+            <div class="flex justify-between mb-1">
+              <span class="font-medium">梭梭林</span>
+              <span class="text-primary font-semibold">8.6 t/ha</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div class="bg-primary h-2.5 rounded-full" style="width: 86%"></div>
+            </div>
+            
+            <div class="flex justify-between mb-1 mt-4">
+              <span class="font-medium">普通灌木林</span>
+              <span class="text-gray-600">5.2 t/ha</span>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2.5">
+              <div class="bg-gray-400 h-2.5 rounded-full" style="width: 52%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white/90 p-8 rounded-xl shadow-lg">
+        <h3 class="text-xl font-bold text-primary mb-6 font-serif">区域生态改善指标</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+          <div class="text-center">
+            <div class="text-4xl font-bold text-primary mb-2">-32%</div>
+            <div class="text-gray-700">沙尘暴频率减少</div>
+            <div class="mt-1 text-xs text-gray-500">气象局数据</div>
+          </div>
+          <div class="text-center">
+            <div class="text-4xl font-bold text-primary mb-2">+40%</div>
+            <div class="text-gray-700">土壤有机质含量增加</div>
+            <div class="mt-1 text-xs text-gray-500">中科院土壤研究所</div>
+          </div>
+          <div class="text-center">
+            <div class="text-4xl font-bold text-primary mb-2">+65%</div>
+            <div class="text-gray-700">区域降水量增加</div>
+            <div class="mt-1 text-xs text-gray-500">国家气象中心</div>
+          </div>
+          <div class="text-center">
+            <div class="text-4xl font-bold text-primary mb-2">-28%</div>
+            <div class="text-gray-700">土壤侵蚀率降低</div>
+            <div class="mt-1 text-xs text-gray-500">水利部监测数据</div>
+          </div>
+        </div>
+        <div class="mt-6 text-center text-sm text-gray-600">
+          监测周期：2015-2024年 | 监测区域：内蒙古、甘肃、新疆梭梭种植区
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 页脚 -->
+  <footer class="bg-dark text-white py-12">
+    <div class="container mx-auto px-6">
+      <div class="flex flex-col md:flex-row justify-between">
+        <div class="mb-8 md:mb-0">
+          <h3 class="text-xl font-bold mb-4">向下滑</h3>
+        </div>
+      </div>
+      <div class="border-t border-gray-700 mt-8 pt-8 text-center text-gray-400 text-sm">
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    // 初始化所有图表
+    document.addEventListener('DOMContentLoaded', function() {
+      // 综合影响雷达图
+      const impactCtx = document.getElementById('impactChart').getContext('2d');
+      const impactChart = new Chart(impactCtx, {
+        type: 'radar',
+        data: {
+          labels: ['固沙能力', '经济效益', '就业创造', '生物多样性', '碳汇能力', '土壤改良'],
+          datasets: [{
+            label: '梭梭种植综合效益',
+            data: [90, 85, 80, 75, 88, 82],
+            fill: true,
+            backgroundColor: 'rgba(46, 125, 50, 0.2)',
+            borderColor: 'rgb(46, 125, 50)',
+            pointBackgroundColor: 'rgb(46, 125, 50)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgb(46, 125, 50)'
+          }]
+        },
+        options: {
+          scales: {
+            r: {
+              angleLines: {
+                display: true
+              },
+              suggestedMin: 0,
+              suggestedMax: 100
+            }
+          },
+          plugins: {
+            legend: {
+              display: false
+            }
+          }
+        }
+      });
+
+      // 经济影响柱状图
+      const economicCtx = document.getElementById('economicChart').getContext('2d');
+      const economicChart = new Chart(economicCtx, {
+        type: 'bar',
+        data: {
+          labels: ['2020', '2021', '2022', '2023', '2024'],
+          datasets: [
+            {
+              label: '肉苁蓉产业',
+              data: [18, 25, 34, 42, 52],
+              backgroundColor: '#2E7D32',
+            },
+            {
+              label: '生态旅游',
+              data: [3, 5, 8, 12, 18],
+              backgroundColor: '#81C784',
+            },
+            {
+              label: '饲料加工',
+              data: [2, 3, 4, 5, 7],
+              backgroundColor: '#4CAF50',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: '产值 (亿元)'
+              }
+            }
+          }
+        }
+      });
+
+      // 产业链产值饼图
+      const industryCtx = document.getElementById('industryChart').getContext('2d');
+      const industryChart = new Chart(industryCtx, {
+        type: 'doughnut',
+        data: {
+          labels: ['肉苁蓉产业', '生态旅游', '饲料加工', '生物质能源', '其他'],
+          datasets: [{
+            data: [58, 18, 12, 8, 4],
+            backgroundColor: [
+              '#2E7D32',
+              '#81C784',
+              '#4CAF50',
+              '#A5D6A7',
+              '#C8E6C9'
+            ],
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'right'
+            }
+          }
+        }
+      });
+
+      // 收入增长曲线图
+      const incomeCtx = document.getElementById('incomeChart').getContext('2d');
+      const incomeChart = new Chart(incomeCtx, {
+        type: 'line',
+        data: {
+          labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+          datasets: [
+            {
+              label: '参与项目农牧民收入',
+              data: [23450, 25680, 28500, 31500, 35200, 39518, 42517, 44875, 46647, 48491],
+              borderColor: '#2E7D32',
+              backgroundColor: 'rgba(46, 125, 50, 0.1)',
+              fill: true,
+              tension: 0.4,
+              borderWidth: 3,
+            },
+            {
+              label: '非参与项目农牧民收入',
+              data: [23000, 24500, 25800, 27200, 28600, 30100, 31800, 33200, 34500, 35800],
+              borderColor: '#9E9E9E',
+              backgroundColor: 'rgba(158, 158, 158, 0.1)',
+              fill: true,
+              tension: 0.4,
+              borderWidth: 2,
+              borderDash: [5, 5]
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: false,
+              title: {
+                display: true,
+                text: '人均年收入 (元)'
+              }
+            }
+          }
+        }
+      });
+
+      // 就业结构变化图
+      const employmentCtx = document.getElementById('employmentChart').getContext('2d');
+      const employmentChart = new Chart(employmentCtx, {
+        type: 'bar',
+        data: {
+          labels: ['2015', '2017', '2019', '2021', '2023', '2024'],
+          datasets: [
+            {
+              label: '传统农牧业',
+              data: [72, 65, 52, 42, 35, 30],
+              backgroundColor: '#9E9E9E',
+            },
+            {
+              label: '梭梭产业链',
+              data: [15, 22, 31, 38, 45, 52],
+              backgroundColor: '#2E7D32',
+            },
+            {
+              label: '外出务工',
+              data: [13, 13, 17, 20, 20, 18],
+              backgroundColor: '#616161',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: '就业比例 (%)'
+              },
+              max: 100
+            }
+          }
+        }
+      });
+
+      // 社会效益雷达图
+      const socialCtx = document.getElementById('socialChart').getContext('2d');
+      const socialChart = new Chart(socialCtx, {
+        type: 'radar',
+        data: {
+          labels: ['收入水平', '教育投入', '医疗保障', '住房条件', '社区凝聚力', '生态意识'],
+          datasets: [
+            {
+              label: '参与项目前 (2015)',
+              data: [40, 35, 38, 32, 45, 30],
+              fill: true,
+              backgroundColor: 'rgba(158, 158, 158, 0.2)',
+              borderColor: '#9E9E9E',
+              pointBackgroundColor: '#9E9E9E',
+              pointBorderColor: '#fff'
+            },
+            {
+              label: '参与项目后 (2024)',
+              data: [86, 78, 82, 85, 90, 92],
+              fill: true,
+              backgroundColor: 'rgba(46, 125, 50, 0.2)',
+              borderColor: '#2E7D32',
+              pointBackgroundColor: '#2E7D32',
+              pointBorderColor: '#fff'
+            }
+          ]
+        },
+        options: {
+          scales: {
+            r: {
+              angleLines: {
+                display: true
+              },
+              suggestedMin: 0,
+              suggestedMax: 100
+            }
+          }
+        }
+      });
+
+      // 荒漠化治理成效图
+      const desertCtx = document.getElementById('desertChart').getContext('2d');
+      const desertChart = new Chart(desertCtx, {
+        type: 'line',
+        data: {
+          labels: ['2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023', '2024'],
+          datasets: [
+            {
+              label: '流动沙丘面积 (万亩)',
+              data: [520, 490, 450, 410, 380, 350, 320, 295, 270, 245],
+              borderColor: '#E91E63',
+              backgroundColor: 'rgba(233, 30, 99, 0.1)',
+              fill: true,
+              yAxisID: 'y',
+            },
+            {
+              label: '植被覆盖率 (%)',
+              data: [12, 15, 18, 22, 26, 31, 36, 42, 48, 55],
+              borderColor: '#2E7D32',
+              backgroundColor: 'rgba(46, 125, 50, 0.1)',
+              fill: true,
+              yAxisID: 'y1',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              type: 'linear',
+              display: true,
+              position: 'left',
+              title: {
+                display: true,
+                text: '流动沙丘面积 (万亩)'
+              }
+            },
+            y1: {
+              type: 'linear',
+              display: true,
+              position: 'right',
+              title: {
+                display: true,
+                text: '植被覆盖率 (%)'
+              },
+              grid: {
+                drawOnChartArea: false,
+              },
+              min: 0,
+              max: 60
+            }
+          }
+        }
+      });
+
+      // 生物多样性恢复图
+      const biodiversityCtx = document.getElementById('biodiversityChart').getContext('2d');
+      const biodiversityChart = new Chart(biodiversityCtx, {
+        type: 'bar',
+        data: {
+          labels: ['2015', '2017', '2019', '2021', '2023', '2024'],
+          datasets: [
+            {
+              label: '植物物种数',
+              data: [18, 24, 32, 41, 52, 58],
+              backgroundColor: '#4CAF50',
+            },
+            {
+              label: '动物物种数',
+              data: [12, 16, 22, 28, 35, 42],
+              backgroundColor: '#81C784',
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            y: {
+              beginAtZero: true,
+              title: {
+                display: true,
+                text: '物种数量'
+              }
+            }
+          }
+        }
+      });
+    });
+  </script>
+</body>
+</html>
